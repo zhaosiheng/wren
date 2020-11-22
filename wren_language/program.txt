@@ -1,0 +1,10 @@
+program p is
+   var b: boolean;
+   var m,n: integer;
+begin
+   read m;read n;
+   b:= m < n;
+   if b then write m
+        else write n
+   end if
+end
