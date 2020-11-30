@@ -48,21 +48,7 @@ int op_split(string s,priority_table t){
 		return -1;
 	return stack[0].first;
 }
-vector<string> expr_split(string str, regex p) {
-	string s = str;
-	smatch result;
-	vector<string> terms;
-	while (regex_search(str, result, p)) {
-		terms.push_back(result[0]);
-		str = result.suffix().str();
-	}
-	const char* c = terms[terms.size() - 1].data();
-	int pos = s.rfind(c);
-	vector<string> res;
-	res.push_back(s.substr(0, pos));
-	res.push_back(s.substr(pos));
-	return res;
-}
+
 
 bool be_found(string str,string pattern) {
 	if (str.find(pattern) < str.size())
@@ -70,6 +56,7 @@ bool be_found(string str,string pattern) {
 	else
 		return false;
 }
+//在字符串str中遍历，当遇到pattern时去除并便分割，可将str分割成数个子串，
 vector<string> split(string str, string pattern)
 {
 	int pos;
@@ -88,6 +75,20 @@ vector<string> split(string str, string pattern)
 	}
 	return result;
 }
+//除去字符串s头尾的空格和换行符
+void clear_spaces(string &s) {
+	for (; s[0] == ' ' || s[0] == '\n'; s = s.substr(1));
+	for (; s[s.length() - 1] == ' ' || s[s.length() - 1] == '\n'; s.pop_back());
+}
+typedef vector<pair<string, int>> all_var;
+all_var vars = {};
+int var_exist(string s) {
+	for (int i = 0; i < vars.size(); i++) {
+		if (vars[i].first.compare(s) == 0)
+			return i;
+	}
+	return -1;
+}
 
 enum Is_Empty{ nonEmpty,Empty};
 enum Type { integer, boolean, program, undefined };
@@ -95,15 +96,7 @@ typedef string Name;
 typedef vector<Name> Var_list;
 typedef map<Name, Type> Symbol_table;
 
-typedef vector<pair<string, int>> all_var ;
-all_var vars = {};
-int var_exist(string s) {
-	for (int i=0;i<vars.size(); i++) {
-		if (vars[i].first.compare(s)==0)
-			return i;
-	}
-	return -1;
-}
+
 
 Type lookup_type(Name n,Symbol_table t) {
 	Symbol_table::iterator iter;
@@ -192,8 +185,7 @@ public:
 	Name mine;
 	int val;
 	numeral(string s) {
-		for (; s[0] == ' ' || s[0] == '\n'; s = s.substr(1));
-		for (; s[s.length() - 1] == ' ' || s[s.length() - 1] == '\n'; s.pop_back());
+		clear_spaces(s);
 		if (s.length() == 1) {
 			f = 0;
 			my_digit = new digit(s[0]);
@@ -217,7 +209,6 @@ public:
 	digit* my_digits;
 	Name mine;
 	identifier(string s) {
-		
 		if (s.length() == 1) {
 			f = 0;
 			my_letter = new letter(s[0]);
@@ -248,8 +239,7 @@ public:
 	Name mine;
 	int val;
 	variable(string s) {
-		for (; s[0] == ' ' || s[0] == '\n'; s = s.substr(1));
-		for (; s[s.length() - 1] == ' ' || s[s.length() - 1] == '\n'; s.pop_back());
+		clear_spaces(s);
 		my_identifier = new identifier(s);
 		mine = my_identifier->mine;
 		int tmp = var_exist(mine);
@@ -375,8 +365,7 @@ public:
 	Type mine_t;
 	int val;
 	integer_expr(string s, Symbol_table st, Type t) :mine_s(st), mine_t(t) {
-		for (; s[0] == ' '||s[0]=='\n'; s = s.substr(1));
-		for (; s[s.length() - 1] == ' ' || s[s.length() - 1] == '\n'; s.pop_back());
+		clear_spaces(s);
 		int pos = op_split(s, int_pr);
 		if (pos == -1||s[pos]=='*'||s[pos]=='/') {
 			f = 0;
@@ -500,8 +489,7 @@ public:
 	Type mine_t;
 	int val;
 	boolean_expr(string s, Symbol_table st, Type t):mine_s(st),mine_t(t) {
-		for (; s[0] == ' '||s[0]=='\n'; s = s.substr(1));
-		for (; s[s.length() - 1] == ' ' || s[s.length() - 1] == '\n'; s.pop_back());
+		clear_spaces(s); 
 		int pos = op_split(s, bool_pr);
 		if (pos == -1 || !s.substr(pos,3).compare("and")) {
 			f = 0;
@@ -517,7 +505,6 @@ public:
 		}
 	}
 };
-
 class type {
 public:
 	Type a= integer;
@@ -586,7 +573,6 @@ public:
 		mine = build_symbol_table(my_variable_list->mine, *(my_type->mine) );
 	}
 };
-
 class declarationsequence {
 public:
 	int f;
@@ -611,7 +597,6 @@ public:
 		}
 	}
 };
-
 class command {
 public:
 	int f;//0-read,1-write,2-while,3-:=,4-if_else,5-if
@@ -687,13 +672,6 @@ public:
 	}
 
 };
-
-
-
-
-
-
-
 
 
 boolean_element::boolean_element(string s, Symbol_table st, Type t) :mine_s(st), mine_t(t) {
@@ -893,8 +871,7 @@ command::command(string s, Symbol_table st) :mine(st) {
 }
 
 commandsequence::commandsequence(string s, Symbol_table st) :mine(st) {
-	for (; s[0] == ' ' || s[0] == '\n'; s = s.substr(1));
-	for (; s[s.length() - 1] == ' ' || s[s.length() - 1] == '\n'; s.pop_back());
+	clear_spaces(s);
 	if (!s.empty()) {
 		int pos = s.find(";");
 		if (pos != -1) {
