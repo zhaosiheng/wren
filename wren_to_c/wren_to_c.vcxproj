@@ -141,6 +141,13 @@
   <ItemGroup>
     <ClCompile Include="wren_to_c.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="nonterminal_symbols%28Simplified%29.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="program.txt" />
+    <Text Include="文本.txt" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

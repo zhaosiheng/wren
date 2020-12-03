@@ -1,0 +1,104 @@
+<program> ::= program <identifier> is <block>
+  Code(<promgram>) ¡û"int main(){"+Code(<block>)+"return 0;}"
+<block> ::= <declarationsequence> begin <commandsequence> end
+  Code(<block>) ¡ûCode(<declarationsequence>)+Code(<commandsequence>))
+<declaration> ::= var <variable list> : <type>;
+  Code(<declaration>) ¡ûCode(<type>)+" "+Code(<variable list>)+";"
+<declarationsequence> ::=¦Å
+  Code(<declarationsequence>) ¡û{}
+| <declaration> <declaration sequence>2
+  Code(<declarationsequence>) ¡ûCode(<declaration>)+Code(<declarationsequence> 2)
+<variable list> ::=<variable>
+  Code(<variable list>) ¡û Code(<variable>)
+| <variable> , <variable list>2
+  Code(<variable list>) ¡ûCode(Name(<variable>)+","+(<variable list>2))
+<type> ::=integer
+  Code(<type>) ¡û "int"
+| boolean
+  Code(<type>) ¡û "bool"
+<commandsequence> ::=<command>
+  Code(<commandsequence>) ¡û Code(<command>)
+| <command> ; <command sequence>2
+  Code(<commandsequence>)¡ûCode(<command>)+ Code(<commandsequence>2)
+<command> ::=read <variable>
+  Code(<command>)¡û"scanf(\"%d\",&"+Code(<variable>)+");"
+| write <expr>
+  Code(<command>) ¡û "printf(\"%d\",&"+Code(<expr>)+");"
+  Type(<expr>) ¡û integer
+| <variable> := <expr>
+  Code(<command>) ¡ûCode(<variable>)+"="+Code(<expr>)+";"
+| while <boolean expr> do <commandsequence> end while
+  Code(<command>)¡û"while("+Code(<boolean expr>)+"){"+Code(<commandsequence>)+"}"
+| if <boolean expr> then <commandsequence> 1 else <commandsequence> 2 end if
+  Code(<command>)¡û"if("+Code(<boolean expr>)+"){"+Code(<commandsequence> 1)+"}else{"+Code(<commandsequence> 2)+"}"
+| if <boolean expr> then <commandsequence> end if
+  Code(<command>)¡û"if("+Code(<boolean expr>)+"){"+Code(<commandsequence>)+"}"
+<expr> ::=<integer expr>
+ Code(<expr>)¡û Code(<integer expr>)
+| <boolean expr>
+ Code(<expr>)¡û Code(<boolean expr>)
+<integer expr> ::= <term>
+  Code(<integer expr>)¡û Code(<term>) 
+| <integer expr>2 <weak op> <term>
+  Code(<integer expr>)¡û Code(<integer expr>2)+Code(<weak op>)+Code(<term>)
+<term> ::=<element>
+  Code(<term>)¡û Code(<element>) 
+| <term>2 <strong op> <element>
+  Code(<term>)¡û Code(<term>2)+Code(<strong op>)+Code(<element>)
+ <weak op> ::= + | ¨C
+ <strong op> ::= * | /
+<element> ::=<numeral>
+  Code(<element>)¡ûCode(<numeral>)
+| <variable>
+  Code(<element>)¡ûCode(<variable>)
+| ( <expr> )
+  Code(<element>)¡û "("+Code(<expr>)+")" 
+| - <element>2
+  Code(<element>) ¡û "-"+Code(<element>2)
+<boolean expr> ::=<boolean term>
+  Code(<boolean expr>)¡ûCode(<boolean term>) 
+| <boolean expr>2 or <boolean term>
+  Code(<boolean expr>)¡ûCode(<boolean expr>2)+"||"+Code(<boolean term>)
+<boolean term> ::=<boolean element>
+  Code(<boolean term>)¡ûCode(<boolean element>) 
+| <boolean term>2 and <boolean element>
+  Code(<boolean term>)¡ûCode(<boolean term>2)+"&&"+Code(<boolean element>)
+ <boolean element> ::=true
+  Code(<boolean element>)¡û"true"
+| false
+  Code(<boolean element>)¡û"false"
+| <variable>
+  Code(<boolean element>)¡ûCode(<variable>)
+| <comparison>
+  Code(<boolean element>)¡ûCode(<comparison>)
+| not ( <boolean expr> )
+  Code(<boolean element>)¡û"!("+Code(<boolean expr>)+")"
+| ( <boolean expr> )
+  Code(<boolean element>)¡û"("+Code(<boolean expr>)+")"
+<comparison> ::= <integer expr>1 <relation> <integer expr>2
+  Code(<comparison>)¡ûCode(<integer expr>1)+Code(<relation>)+Code(<integer expr>2)
+<relation> ::= = | != | < | < = | > | > =
+<variable> ::= <identifier>
+  Code(<variable>) ¡û Code(<identifier>)
+<identifier> ::=<letter>
+  Code(<identifier>) ¡û Code(<letter>)
+| <identifier>2 <letter>
+  Code(<identifier>) ¡û Code(<identifier>+Code(<letter>)
+| <identifier>2 <digit>
+  Code(<identifier>) ¡û Code(<identifier>2)+Code(<digit>)
+ <letter> ::=
+ a
+  Code(<letter>) ¡û ¡®a¡¯
+: : :
+| z
+  Code(<letter>) ¡û ¡®z¡¯
+<numeral> ::= <digit> 
+  Code(<numeral>)¡ûCode(<digit>)
+| <numeral> <digit>
+  Code(<numeral>)¡ûCode(<numeral>)+Code(<digit>)
+ <digit> ::=
+ 0
+ Code(<digit>) ¡û ¡®0¡¯
+: : :
+| 9
+ Code(<digit>) ¡û ¡®9¡¯

@@ -3,8 +3,7 @@ program p is
    var m,n: integer;
 begin
    read m;read n;
-   b:= m < n;
-   while m < n do m:=m+1
-   end while;
-   write m
+   b:= m <> n;
+   while b do m:= m+1
+   end while
 end

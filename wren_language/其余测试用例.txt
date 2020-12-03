@@ -4,7 +4,7 @@ program p is
 begin
    read m;read n;
    b:= m < n;
-   while m < n do m:=m+1
-   end while;
-   write m
+   if b then write m
+        else write n
+   end if
 end

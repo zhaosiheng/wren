@@ -77,6 +77,7 @@ vector<string> split(string str, string pattern)
 }
 //除去字符串s头尾的空格和换行符
 void clear_spaces(string &s) {
+	if (s.empty()) return;
 	for (; s[0] == ' ' || s[0] == '\n'; s = s.substr(1));
 	for (; s[s.length() - 1] == ' ' || s[s.length() - 1] == '\n'; s.pop_back());
 }
@@ -708,6 +709,7 @@ boolean_element::boolean_element(string s, Symbol_table st, Type t) :mine_s(st),
 	else if (regex_match(s, regex("^[a-z0-9]+$"))) {
 		f = 2;
 		my_variable = new variable(s);
+		//condition
 		switch (lookup_type(my_variable->mine, mine_s))
 		{
 		case boolean:
@@ -737,8 +739,7 @@ boolean_element::boolean_element(string s, Symbol_table st, Type t) :mine_s(st),
 	}
 }
 expr::expr(string s, Symbol_table st, Type t) :mine_s(st), mine_t(t) {
-	for (; s[0] == ' '||s[0]=='\n'; s = s.substr(1));
-	for (; s[s.length() - 1] == ' ' || s[s.length() - 1] == ' '; s.pop_back());
+	clear_spaces(s);
 	if (mine_t == integer) {
 		f = 0;
 		my_integer_expr = new integer_expr(s, mine_s, mine_t);
@@ -752,12 +753,11 @@ expr::expr(string s, Symbol_table st, Type t) :mine_s(st), mine_t(t) {
 }
 
 command::command(string s, Symbol_table st) :mine(st) {
-	for (; s[0] == ' '||s[0]=='\n'; s = s.substr(1));
-	for (; s[s.length() - 1] == ' ' || s[s.length() - 1] == '\n'; s.pop_back());
+	clear_spaces(s);
 	if (s.substr(0, 4).compare("read") == 0) {
 		f = 0;
 		rd = s.substr(0, 4);
-		my_variable = new variable(s);
+		my_variable = new variable(s.substr(5));
 		//condition
 		switch (lookup_type(my_variable->mine,mine))
 		{
@@ -799,12 +799,16 @@ command::command(string s, Symbol_table st) :mine(st) {
 		s = s.substr(5);
 		int pos = s.find("do");
 		d = s.substr(pos, 2);
-		my_boolean_expr = new boolean_expr(s.substr(0, pos - 1), mine, boolean);
+		string loop_condition = s.substr(0, pos - 1);
+		my_boolean_expr = new boolean_expr(loop_condition, mine, boolean);
 		s = s.substr(pos + 2);
 	    pos = s.rfind("end while");
 		ed_wh = s.substr(pos, 9);
-		while (my_boolean_expr->val) 
+		while (my_boolean_expr->val) {
 			my_commandsequence = new commandsequence(s.substr(0, pos), mine);
+			my_boolean_expr = new boolean_expr(loop_condition, mine, boolean);
+		}
+
 	}
 	else if (s.substr(0, 2).compare("if") == 0) {
 		i = s.substr(0,2);
